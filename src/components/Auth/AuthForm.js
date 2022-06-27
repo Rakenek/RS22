@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { APIKey } from "../../apiKey";
 
 import classes from "./AuthForm.module.css";
 
@@ -13,24 +14,23 @@ const AuthForm = () => {
     const enteredPassword = passwordRef.current.value;
     const enteredEmail = emailRef.current.value;
 
-    const Login = async () => {
+    const loginOrRegister = async (url) => {
       try {
-        const response = await fetch(
-          `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=
-          AIzaSyAn8gUS0IVVofd1Fi5lSc1hf1g4lQhg0Zs`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              email: enteredEmail,
-              password: enteredPassword,
-              returnSecureToken: true,
-            }),
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await fetch(url, {
+          method: "POST",
+          body: JSON.stringify({
+            email: enteredEmail,
+            password: enteredPassword,
+            returnSecureToken: true,
+          }),
+          headers: { "Content-Type": "application/json" },
+        });
         const data = await response.json();
         setIsLoading(false);
-        if (data && data.error && data.error.message) {
+
+        if (response.ok) {
+          console.log(data);
+        } else if (data && data.error && data.error.message) {
           alert(data.error.message);
           throw new Error(data.error.message);
         }
@@ -40,8 +40,11 @@ const AuthForm = () => {
     };
     setIsLoading(true);
     if (isLogin) {
+      const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${APIKey}`;
+      loginOrRegister(url);
     } else {
-      await Login();
+      const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${APIKey}`;
+      await loginOrRegister(url);
     }
   };
 
