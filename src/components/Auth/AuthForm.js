@@ -16,8 +16,7 @@ const AuthForm = () => {
     const Login = async () => {
       try {
         const response = await fetch(
-          `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=
-          AIzaSyAn8gUS0IVVofd1Fi5lSc1hf1g4lQhg0Zs`,
+          `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=`,
           {
             method: "POST",
             body: JSON.stringify({
