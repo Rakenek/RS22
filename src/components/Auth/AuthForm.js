@@ -1,13 +1,18 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import { APIKey } from "../../apiKey";
+import { AuthContext } from "../../store/auth-context";
 
 import classes from "./AuthForm.module.css";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const history = useHistory();
   const passwordRef = useRef();
   const emailRef = useRef();
+
+  const authCtx = useContext(AuthContext);
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -29,7 +34,9 @@ const AuthForm = () => {
         setIsLoading(false);
 
         if (response.ok) {
+          authCtx.login(data.idToken);
           console.log(data);
+          history.replace("/");
         } else if (data && data.error && data.error.message) {
           alert(data.error.message);
           throw new Error(data.error.message);
@@ -41,7 +48,7 @@ const AuthForm = () => {
     setIsLoading(true);
     if (isLogin) {
       const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${APIKey}`;
-      loginOrRegister(url);
+      await loginOrRegister(url);
     } else {
       const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${APIKey}`;
       await loginOrRegister(url);
